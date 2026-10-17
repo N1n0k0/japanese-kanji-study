@@ -246,6 +246,51 @@ test('reverse practice quiz scores, reviews the meaning prompt and finishes corr
   assert.equal(nodes['quiz-score'].textContent, '1 / 1 correct (100%)');
 });
 
+test('practice chapter dropdown searches, keeps original chapter IDs and handles no results', async () => {
+  const { nodes } = await load();
+  nodes['nav-practice'].click();
+  const search = nodes['practice-chapter-search'];
+  const select = nodes['practice-chapter'];
+  search.value = 'chapter 428';
+  search.listeners.input();
+  assert.equal(select.children.length, 1);
+  assert.equal(select.value, '427');
+  nodes['start-practice'].click();
+  assert.equal(nodes['quiz-view'].hidden, false);
+  nodes['back-to-lesson'].click();
+  assert.equal(select.value, '427');
+  search.value = 'no-such-chapter';
+  search.listeners.input();
+  assert.equal(select.value, '');
+  assert.equal(select.disabled, true);
+  assert.equal(nodes['start-practice'].disabled, true);
+  assert.match(nodes['practice-chapter-count'].textContent, /No matching/);
+  nodes['practice-scope'].value = '10';
+  nodes['practice-scope'].listeners.change();
+  assert.equal(nodes['start-practice'].disabled, false);
+  nodes['start-practice'].click();
+  assert.match(nodes['quiz-progress'].textContent, /of 10/);
+  nodes['back-to-lesson'].click();
+  nodes['practice-scope'].value = 'chapter';
+  nodes['practice-scope'].listeners.change();
+  assert.equal(nodes['start-practice'].disabled, true);
+  search.value = '一';
+  search.listeners.input();
+  assert.equal(select.children.length, 1);
+  assert.equal(select.value, '0');
+  assert.equal(nodes['start-practice'].disabled, false);
+  search.value = '';
+  search.listeners.input();
+  assert.equal(select.children.length, 428);
+  assert.equal(select.value, '0');
+  for (const query of ['Nature', 'ichi', 'イチ', 'one']) {
+    search.value = query;
+    search.listeners.input();
+    assert.ok(select.children.length > 0);
+    assert.notEqual(select.value, '');
+  }
+});
+
 test('search finds meanings, kanji, variants, kana and romaji and respects grade filters', () => {
   const first = catalog.chapters[0];
   for (const query of [' one ', '一', 'イチ', 'いち', 'ichi', 'NUMBERS']) {

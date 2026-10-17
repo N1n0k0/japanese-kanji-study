@@ -83,9 +83,45 @@
       else button.removeAttribute('aria-current');
     });
     if (name === 'practice') {
-      document.getElementById('practice-chapter').value = String(currentChapter);
+      document.getElementById('practice-chapter-search').value = '';
+      renderPracticeChapters(String(currentChapter));
       document.getElementById('practice-title').focus();
     } else document.getElementById('chapter-title').focus();
+  }
+
+  function renderPracticeChapters(preferred) {
+    var select = document.getElementById('practice-chapter');
+    var selected = preferred === undefined ? select.value : preferred;
+    var query = document.getElementById('practice-chapter-search').value;
+    select.textContent = '';
+    var available = [];
+    chapters.forEach(function (chapter, index) {
+      if (!KanjiStudy.matches(chapter, '', query)) return;
+      var option = element('option', '', chapter.id + '. ' + chapter.title + ' / ' +
+        chapter.kanji.map(function (kanji) { return kanji.character; }).join(' '));
+      option.value = String(index);
+      available.push(option.value);
+      select.appendChild(option);
+    });
+    select.value = available.includes(selected) ? selected : (available[0] || '');
+    if (!available.length) {
+      var empty = element('option', '', 'No matching chapters');
+      empty.value = '';
+      select.appendChild(empty);
+      select.value = '';
+    }
+    updatePracticeScope();
+    document.getElementById('practice-chapter-count').textContent = available.length ?
+      available.length + ' matching chapters. Choose a chapter from the dropdown.' :
+      'No matching chapters. Clear or change your search to continue.';
+  }
+
+  function updatePracticeScope() {
+    var random = document.getElementById('practice-scope').value !== 'chapter';
+    var empty = document.getElementById('practice-chapter').value === '';
+    document.getElementById('practice-chapter-field').hidden = random;
+    document.getElementById('practice-chapter').disabled = random || empty;
+    document.getElementById('start-practice').disabled = !random && empty;
   }
 
   function showChapter(index, moveFocus) {
@@ -226,14 +262,7 @@
       if (!KanjiStudy.validCatalog(data)) throw new Error('Invalid kanji lesson content.');
       chapters = data.chapters;
       pool = [].concat.apply([], chapters.map(function (chapter) { return chapter.kanji; }));
-      var chapterSelect = document.getElementById('practice-chapter');
-      chapterSelect.textContent = '';
-      chapters.forEach(function (chapter, index) {
-        var option = element('option', '', chapter.id + '. ' + chapter.title + ' (' + chapter.kanji.length + ' kanji)');
-        option.value = String(index);
-        chapterSelect.appendChild(option);
-      });
-      chapterSelect.value = '0';
+      renderPracticeChapters('0');
       document.getElementById('catalog-summary').textContent = data.totalKanji.toLocaleString() + ' kanji / ' +
         chapters.length + ' chapters / meaning & reading quizzes';
       showChapter(0, false);
@@ -258,13 +287,16 @@
   });
   document.getElementById('nav-lessons').addEventListener('click', function () { showSection('lessons'); });
   document.getElementById('nav-practice').addEventListener('click', function () { showSection('practice'); });
-  document.getElementById('practice-scope').addEventListener('change', function () {
-    var random = document.getElementById('practice-scope').value !== 'chapter';
-    document.getElementById('practice-chapter-field').hidden = random;
-    document.getElementById('practice-chapter').disabled = random;
+  document.getElementById('practice-scope').addEventListener('change', updatePracticeScope);
+  document.getElementById('practice-chapter-search').addEventListener('input', function () {
+    renderPracticeChapters();
   });
   document.getElementById('start-practice').addEventListener('click', function () {
     var scope = document.getElementById('practice-scope').value;
+    if (scope === 'chapter' && document.getElementById('practice-chapter').value === '') {
+      document.getElementById('practice-chapter-search').focus();
+      return;
+    }
     practiceSettings = {
       mode: document.getElementById('practice-type').value,
       count: scope === 'chapter' ? null : Number(scope),

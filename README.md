@@ -44,6 +44,11 @@ collection. Practice has one question per character. Questions have four
 choices, immediate feedback, scores, mistake review, and randomized retries.
 Scores are not saved; changing sections cancels the active attempt.
 
+The practice chapter dropdown has a search field for chapter numbers, titles,
+kanji, meanings, kana and romaji. Matching options preview their characters.
+When no chapters match, chapter practice is disabled with a clear message;
+random practice remains available.
+
 Pronunciation questions identify the reading type. No spoken audio or microphone
 is involved. A dot in readings separates okurigana (`ひと.つ` / `hito.tsu`);
 hyphens mark prefix/suffix readings. Romaji uses explicit vowels (`kyuu`,

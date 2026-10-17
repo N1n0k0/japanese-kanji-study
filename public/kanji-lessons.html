@@ -50,8 +50,11 @@
           </select>
         </div>
         <div id="practice-chapter-field">
+          <label for="practice-chapter-search">Search chapters</label>
+          <input id="practice-chapter-search" type="search" placeholder="Chapter number, title, kanji or meaning" aria-controls="practice-chapter" aria-describedby="practice-chapter-count">
           <label for="practice-chapter">Chapter</label>
-          <select id="practice-chapter"></select>
+          <select id="practice-chapter" aria-describedby="practice-chapter-count"></select>
+          <p id="practice-chapter-count" role="status"></p>
         </div>
       </div>
       <p>Pronunciation quizzes ask for one available on'yomi or kun'yomi reading, shown in kana and romaji. No microphone or audio is required.</p>

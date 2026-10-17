@@ -118,7 +118,7 @@
   }
 
   function searchText(chapter) {
-    return [chapter.title, chapter.description].concat(chapter.kanji.map(function (kanji) {
+    return [String(chapter.id), 'Chapter ' + chapter.id, chapter.title, chapter.description].concat(chapter.kanji.map(function (kanji) {
       return [kanji.character, kanji.meaning].concat(kanji.variants, kanji.onyomi.concat(kanji.kunyomi)
         .map(function (r) { return r.kana + ' ' + r.romaji + ' ' + canonical(r.kana); })).join(' ');
     })).join(' ').toLowerCase();
