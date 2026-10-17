@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Study all 2,136 Joyo kanji in small chapters, with kana, romaji, English meanings, and chapter quizzes.">
+  <title>Kanji Chapters | Japanese Study</title>
+  <link rel="stylesheet" href="./css/kanji-lessons.css">
+  <script src="./js/kanji-study.js" defer></script>
+  <script src="./js/kanji-lessons.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./kanji-lessons.html"><span lang="ja">学</span> Japanese Study</a>
+    <nav class="header-navigation" aria-label="Study sections">
+      <button id="nav-lessons" type="button" aria-current="page" aria-controls="lessons" disabled>Lessons</button>
+      <button id="nav-practice" type="button" aria-controls="practice" disabled>Practise</button>
+    </nav>
+    <span class="badge">2,136 Jōyō kanji</span>
+  </header>
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <p class="eyebrow">A little Japanese, every day</p>
+      <h1 id="page-title">Small chapters.<br>A whole world of kanji.</h1>
+      <p>Start small. Learn each character's meaning, Japanese readings, and pronunciation in Latin letters.</p>
+      <p id="catalog-summary"></p>
+    </section>
+    <p id="status" role="status">Loading your chapters...</p>
+    <button id="retry" type="button" hidden>Try again</button>
+    <noscript><p>Please enable JavaScript to browse the kanji chapters.</p></noscript>
+    <section id="practice" class="practice-panel" aria-labelledby="practice-title" hidden>
+      <p class="eyebrow">Make it stick</p>
+      <h2 id="practice-title" tabindex="-1">Choose your practice</h2>
+      <p>Pick a quiz type and a chapter, or challenge yourself with 10 or 20 random characters from the full collection. One question per character.</p>
+      <div class="practice-fields">
+        <div>
+          <label for="practice-type">Quiz type</label>
+          <select id="practice-type">
+            <option value="meaning">Guess the meaning (kanji → English)</option>
+            <option value="pronunciation">Guess the pronunciation (kanji → reading)</option>
+            <option value="kanji">Guess the kanji (English → kanji)</option>
+          </select>
+        </div>
+        <div>
+          <label for="practice-scope">Characters to practise</label>
+          <select id="practice-scope">
+            <option value="chapter">Selected chapter</option>
+            <option value="10">10 random characters</option>
+            <option value="20">20 random characters</option>
+          </select>
+        </div>
+        <div id="practice-chapter-field">
+          <label for="practice-chapter">Chapter</label>
+          <select id="practice-chapter"></select>
+        </div>
+      </div>
+      <p>Pronunciation quizzes ask for one available on'yomi or kun'yomi reading, shown in kana and romaji. No microphone or audio is required.</p>
+      <button id="start-practice" class="primary-button" type="button">Start practice</button>
+    </section>
+    <div id="lessons" class="layout" hidden>
+      <aside>
+        <h2 class="sidebar-title">Your chapters</h2>
+        <label for="grade-filter">Dictionary grade</label>
+        <select id="grade-filter">
+          <option value="">All grades</option>
+          <option value="1">Grade 1</option>
+          <option value="2">Grade 2</option>
+          <option value="3">Grade 3</option>
+          <option value="4">Grade 4</option>
+          <option value="5">Grade 5</option>
+          <option value="6">Grade 6</option>
+          <option value="8">Secondary school</option>
+        </select>
+        <label for="chapter-search">Find a chapter or kanji</label>
+        <input id="chapter-search" type="search" placeholder="Kanji, meaning, kana or romaji">
+        <p id="chapter-count" role="status"></p>
+        <nav id="chapters" aria-label="Kanji chapters"></nav>
+        <div class="reading-guide">
+          <h2>How to read a card</h2>
+          <p><strong>On'yomi</strong> are Sino-Japanese readings, shown in katakana.</p>
+          <p><strong>Kun'yomi</strong> are native Japanese readings, shown in hiragana. Word endings are included where shown.</p>
+          <p><strong>Romaji</strong> shows pronunciation in Latin letters. It is not an English translation.</p>
+          <p>A dot separates a kanji reading from its word ending: <span lang="ja">ひと.つ</span> / hito.tsu. A hyphen marks a prefix or suffix reading. “(stop)” marks a final small <span lang="ja">っ</span>.</p>
+          <p>A reading depends on the word. Some kanji have only one reading type. Dictionary readings can include uncommon readings outside the official Jōyō reading table.</p>
+        </div>
+      </aside>
+      <section aria-labelledby="chapter-title">
+        <div class="chapter-header">
+          <p id="chapter-position" class="eyebrow"></p>
+          <h2 id="chapter-title" tabindex="-1"></h2>
+          <p id="chapter-description"></p>
+        </div>
+        <div id="lesson-view">
+          <div id="kanji-cards" class="cards"></div>
+          <div class="quiz-invitation">
+            <h3>Ready to try it yourself?</h3>
+            <p>Practice the meanings and available on'yomi and kun'yomi for every kanji in this chapter. Answers stay hidden until you choose.</p>
+            <button id="start-quiz" class="primary-button" type="button">Take chapter quiz</button>
+          </div>
+        </div>
+        <nav class="chapter-navigation" aria-label="Chapter navigation">
+          <button id="previous" type="button">Previous chapter</button>
+          <span id="page-count"></span>
+          <button id="next" type="button">Next chapter</button>
+        </nav>
+      </section>
+    </div>
+        <section id="quiz-view" class="quiz-panel" aria-labelledby="quiz-title" hidden>
+          <div class="quiz-topline">
+            <h3 id="quiz-title" tabindex="-1">Chapter quiz</h3>
+            <button id="back-to-lesson" type="button">Back to lesson</button>
+          </div>
+          <div id="quiz-question">
+            <p id="quiz-progress" class="eyebrow"></p>
+            <progress id="quiz-meter" aria-label="Quiz progress" max="1" value="0"></progress>
+            <p id="quiz-prompt"></p>
+            <div id="quiz-character" class="quiz-character" lang="ja"></div>
+            <div id="quiz-options" class="quiz-options" role="group" aria-labelledby="quiz-prompt"></div>
+            <p id="quiz-feedback" role="status"></p>
+            <button id="next-question" class="primary-button" type="button" hidden>Next question</button>
+          </div>
+          <div id="quiz-results" hidden>
+            <h4 id="quiz-score" tabindex="-1"></h4>
+            <p id="quiz-result-message"></p>
+            <ul id="quiz-review"></ul>
+            <button id="retry-quiz" class="primary-button" type="button">Try a new quiz</button>
+          </div>
+        </section>
+    <footer class="catalog-note">
+      <p>All 2,136 Jōyō characters, with up to five kanji per chapter. Grade groups follow the dictionary snapshot (before the revised 2020 school allocation); these are not JLPT levels. Quiz scores apply to the current attempt and are not saved.</p>
+      <p>Readings and meanings from <a href="https://www.edrdg.org/wiki/index.php/KANJIDIC_Project">KANJIDIC</a>, copyright James William Breen and <a href="https://www.edrdg.org/">EDRDG</a>, via <a href="https://github.com/davidluzgouveia/kanji-data">David Gouveia's kanji-data</a>. Adapted lesson data: <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>. <a href="./data/NOTICE.txt">Attribution, changes and license notices</a>.</p>
+    </footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,58 @@
+KANJI LESSON DATA
+
+The readings and English meanings in kanji-lessons.json use the KANJIDIC
+dictionary files. Copyright James William Breen and the Electronic Dictionary
+Research and Development Group (EDRDG).
+
+KANJIDIC project and documentation:
+https://www.edrdg.org/wiki/index.php/KANJIDIC_Project
+EDRDG copyright, attribution, update and licence statement:
+https://www.edrdg.org/edrdg/licence.html
+Dictionary data and this adapted lesson dataset: Creative Commons
+Attribution-ShareAlike 4.0 International:
+https://creativecommons.org/licenses/by-sa/4.0/
+https://creativecommons.org/licenses/by-sa/4.0/legalcode
+
+Source JSON conversion: David Gouveia's kanji-data.
+https://github.com/davidluzgouveia/kanji-data
+Pinned revision: 00fd7079c3890f430759536f91aa5e854ec0ca4f
+Only KANJIDIC-derived meanings, readings, stroke counts and grades are used.
+No WaniKani fields or inferred JLPT levels are included.
+
+Changes: selection of fields; grouping into chapters; normalization of kana
+and the four official Joyo glyph forms (with common variants retained);
+addition of mechanically generated romaji. Attribution does not imply
+endorsement. Dictionary readings are not restricted to the official Joyo
+reading table. Grade groups reflect this source snapshot, not the revised
+2020 school allocation. Data is provided without warranty.
+
+Update procedure: before deployment and at least monthly for a public
+dictionary service, check the KANJIDIC project and upstream conversion for
+updates, update the pinned revision in scripts/build-kanji-lessons.js, rebuild
+and run the content/quiz tests. If upstream has not incorporated the current
+KANJIDIC release, refresh its conversion from the current KANJIDIC source
+before updating this snapshot. Review EDRDG's full statement linked above.
+
+The upstream conversion repository includes the following MIT notice:
+
+MIT License
+
+Copyright (c) 2019 David Gouveia
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
