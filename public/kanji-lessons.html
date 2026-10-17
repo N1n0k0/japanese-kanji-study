@@ -5,7 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Study all 2,136 Joyo kanji in small chapters, with kana, romaji, English meanings, and chapter quizzes.">
   <title>Kanji Chapters | Japanese Study</title>
+  <link rel="stylesheet" href="./vendor/select2/select2.min.css">
   <link rel="stylesheet" href="./css/kanji-lessons.css">
+  <script src="./vendor/jquery/jquery.min.js" defer></script>
+  <script src="./vendor/select2/select2.min.js" defer></script>
   <script src="./js/kanji-study.js" defer></script>
   <script src="./js/kanji-lessons.js" defer></script>
 </head>
@@ -50,10 +53,8 @@
           </select>
         </div>
         <div id="practice-chapter-field">
-          <label for="practice-chapter-search">Search chapters</label>
-          <input id="practice-chapter-search" type="search" placeholder="Chapter number, title, kanji or meaning" aria-controls="practice-chapter" aria-describedby="practice-chapter-count">
           <label for="practice-chapter">Chapter</label>
-          <select id="practice-chapter" aria-describedby="practice-chapter-count"></select>
+          <select id="practice-chapter" class="js-example-matcher-start" aria-describedby="practice-chapter-count"></select>
           <p id="practice-chapter-count" role="status"></p>
         </div>
       </div>

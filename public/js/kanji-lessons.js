@@ -7,6 +7,7 @@
   var quiz = null;
   var section = 'lessons';
   var practiceSettings = null;
+  var chapterPicker = null;
   var chapterList = document.getElementById('chapters');
   var cards = document.getElementById('kanji-cards');
   var status = document.getElementById('status');
@@ -67,6 +68,7 @@
   }
 
   function closeQuiz() {
+    if (chapterPicker) chapterPicker.select2('close');
     quiz = null;
     document.getElementById('quiz-view').hidden = true;
     document.getElementById('lesson-view').hidden = false;
@@ -83,44 +85,75 @@
       else button.removeAttribute('aria-current');
     });
     if (name === 'practice') {
-      document.getElementById('practice-chapter-search').value = '';
-      renderPracticeChapters(String(currentChapter));
+      document.getElementById('practice-chapter').value = String(currentChapter);
+      chapterPicker.trigger('change');
       document.getElementById('practice-title').focus();
     } else document.getElementById('chapter-title').focus();
   }
 
-  function renderPracticeChapters(preferred) {
-    var select = document.getElementById('practice-chapter');
-    var selected = preferred === undefined ? select.value : preferred;
-    var query = document.getElementById('practice-chapter-search').value;
-    select.textContent = '';
-    var available = [];
-    chapters.forEach(function (chapter, index) {
-      if (!KanjiStudy.matches(chapter, '', query)) return;
-      var option = element('option', '', chapter.id + '. ' + chapter.title + ' / ' +
-        chapter.kanji.map(function (kanji) { return kanji.character; }).join(' '));
-      option.value = String(index);
-      available.push(option.value);
-      select.appendChild(option);
+  function practiceChapterLabel(chapter) {
+    return chapter.id + '. ' + chapter.title + ' / ' +
+      chapter.kanji.map(function (kanji) { return kanji.character; }).join(' ');
+  }
+
+  function selectedPracticeChapter() {
+    var value = document.getElementById('practice-chapter').value.trim();
+    return chapters.findIndex(function (chapter) {
+      return value === String(chapter.id - 1);
     });
-    select.value = available.includes(selected) ? selected : (available[0] || '');
-    if (!available.length) {
-      var empty = element('option', '', 'No matching chapters');
-      empty.value = '';
-      select.appendChild(empty);
-      select.value = '';
+  }
+
+  function matchStart(params, data) {
+    if ($.trim(params.term) === '') return data;
+    if (typeof data.children === 'undefined') return null;
+    var filteredChildren = [];
+    $.each(data.children, function (index, child) {
+      if (child.text.toUpperCase().indexOf(params.term.toUpperCase()) === 0) {
+        filteredChildren.push(child);
+      }
+    });
+    if (filteredChildren.length) {
+      var modifiedData = $.extend({}, data, true);
+      modifiedData.children = filteredChildren;
+      return modifiedData;
     }
+    return null;
+  }
+
+  function initializePracticeChapters() {
+    var select = document.getElementById('practice-chapter');
+    select.textContent = '';
+    var groups = {};
+    chapters.forEach(function (chapter, index) {
+      if (!groups[chapter.grade]) {
+        groups[chapter.grade] = element('optgroup');
+        groups[chapter.grade].label = chapter.grade === 8 ? 'Secondary school' : 'Grade ' + chapter.grade;
+        select.appendChild(groups[chapter.grade]);
+      }
+      var option = element('option');
+      option.textContent = practiceChapterLabel(chapter);
+      option.value = String(index);
+      groups[chapter.grade].appendChild(option);
+    });
+    select.value = '0';
+    chapterPicker = $('#practice-chapter');
+    chapterPicker.select2({
+      matcher: matchStart,
+      width: '100%',
+      dropdownParent: $('#practice-chapter-field'),
+      minimumResultsForSearch: 0
+    });
+    chapterPicker.on('change', updatePracticeScope);
     updatePracticeScope();
-    document.getElementById('practice-chapter-count').textContent = available.length ?
-      available.length + ' matching chapters. Choose a chapter from the dropdown.' :
-      'No matching chapters. Clear or change your search to continue.';
+    document.getElementById('practice-chapter-count').textContent = 'Open the dropdown and type a chapter number. Results match from the start of each label.';
   }
 
   function updatePracticeScope() {
     var random = document.getElementById('practice-scope').value !== 'chapter';
-    var empty = document.getElementById('practice-chapter').value === '';
+    var empty = selectedPracticeChapter() < 0;
     document.getElementById('practice-chapter-field').hidden = random;
-    document.getElementById('practice-chapter').disabled = random || empty;
+    document.getElementById('practice-chapter').disabled = random;
+    if (random && chapterPicker) chapterPicker.select2('close');
     document.getElementById('start-practice').disabled = !random && empty;
   }
 
@@ -262,7 +295,7 @@
       if (!KanjiStudy.validCatalog(data)) throw new Error('Invalid kanji lesson content.');
       chapters = data.chapters;
       pool = [].concat.apply([], chapters.map(function (chapter) { return chapter.kanji; }));
-      renderPracticeChapters('0');
+      initializePracticeChapters();
       document.getElementById('catalog-summary').textContent = data.totalKanji.toLocaleString() + ' kanji / ' +
         chapters.length + ' chapters / meaning & reading quizzes';
       showChapter(0, false);
@@ -288,19 +321,16 @@
   document.getElementById('nav-lessons').addEventListener('click', function () { showSection('lessons'); });
   document.getElementById('nav-practice').addEventListener('click', function () { showSection('practice'); });
   document.getElementById('practice-scope').addEventListener('change', updatePracticeScope);
-  document.getElementById('practice-chapter-search').addEventListener('input', function () {
-    renderPracticeChapters();
-  });
   document.getElementById('start-practice').addEventListener('click', function () {
     var scope = document.getElementById('practice-scope').value;
-    if (scope === 'chapter' && document.getElementById('practice-chapter').value === '') {
-      document.getElementById('practice-chapter-search').focus();
+    if (scope === 'chapter' && selectedPracticeChapter() < 0) {
+      document.getElementById('practice-chapter').focus();
       return;
     }
     practiceSettings = {
       mode: document.getElementById('practice-type').value,
       count: scope === 'chapter' ? null : Number(scope),
-      chapter: Number(document.getElementById('practice-chapter').value)
+      chapter: selectedPracticeChapter()
     };
     startQuiz(true);
   });

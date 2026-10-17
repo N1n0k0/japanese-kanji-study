@@ -38,7 +38,21 @@ async function load(fetch = async () => ({ ok: true, json: async () => catalog }
   nodes['practice-type'].value = 'meaning';
   nodes['practice-scope'].value = 'chapter';
   const errors = [];
+  const picker = {
+    select2: configuration => {
+      if (typeof configuration === 'object') picker.configuration = configuration;
+      else picker.lastCommand = configuration;
+      return picker;
+    },
+    on: (event, callback) => { nodes['practice-chapter'].listeners[event] = callback; return picker; },
+    trigger: event => { nodes['practice-chapter'].listeners[event](); return picker; }
+  };
+  const $ = () => picker;
+  $.trim = value => (value || '').trim();
+  $.each = (values, callback) => values.forEach((value, index) => callback(index, value));
+  $.extend = (target, source) => Object.assign(target, source);
   vm.runInNewContext(script, {
+    $,
     KanjiStudy: core,
     document: {
       getElementById: id => {
@@ -51,7 +65,7 @@ async function load(fetch = async () => ({ ok: true, json: async () => catalog }
     console: { error: (...args) => errors.push(args) }
   });
   await new Promise(resolve => setImmediate(resolve));
-  return { nodes, errors };
+  return { nodes, errors, picker };
 }
 
 function seededRandom() {
@@ -186,7 +200,7 @@ test('practice pronunciation supports kanji with only one reading type', () => {
 
 test('header practice configuration, random scopes, retries and section switching work', async () => {
   const { nodes, errors } = await load();
-  assert.equal(nodes['practice-chapter'].children.length, 428);
+  assert.equal(nodes['practice-chapter'].children.flatMap(group => group.children).length, 428);
   nodes['nav-practice'].click();
   assert.equal(nodes.lessons.hidden, true);
   assert.equal(nodes.practice.hidden, false);
@@ -246,49 +260,35 @@ test('reverse practice quiz scores, reviews the meaning prompt and finishes corr
   assert.equal(nodes['quiz-score'].textContent, '1 / 1 correct (100%)');
 });
 
-test('practice chapter dropdown searches, keeps original chapter IDs and handles no results', async () => {
-  const { nodes } = await load();
+test('Select2 uses grouped prefix matching without a separate search input', async () => {
+  const { nodes, picker } = await load();
   nodes['nav-practice'].click();
-  const search = nodes['practice-chapter-search'];
+  assert.equal(html.includes('id="practice-chapter-search"'), false);
+  assert.equal(html.includes('<datalist'), false);
   const select = nodes['practice-chapter'];
-  search.value = 'chapter 428';
-  search.listeners.input();
-  assert.equal(select.children.length, 1);
-  assert.equal(select.value, '427');
+  assert.equal(select.children.length, 7);
+  const groups = select.children.map(group => ({
+    text: group.label, children: group.children.map(option => ({ id: option.value, text: option.textContent }))
+  }));
+  const matcher = picker.configuration.matcher;
+  assert.equal(picker.configuration.minimumResultsForSearch, 0);
+  assert.equal(matcher({ term: '' }, groups[0]), groups[0]);
+  assert.equal(matcher({ term: '   ' }, groups[0]), groups[0]);
+  assert.equal(matcher({ term: '1' }, { text: '1. Single option' }), null);
+  const results = groups.map(group => matcher({ term: '12' }, group)).filter(Boolean).flatMap(group => group.children);
+  assert.equal(results.length, 11);
+  assert.ok(results.every(option => option.text.startsWith('12')));
+  assert.equal(groups.flatMap(group => group.children).length, 428);
+  assert.equal(groups.map(group => matcher({ term: 'no-such-chapter' }, group)).filter(Boolean).length, 0);
+  assert.equal(matcher({ term: 'ALPHA' }, { children: [{ text: 'alpha' }] }).children.length, 1);
+  select.value = '427';
+  select.listeners.change();
   nodes['start-practice'].click();
   assert.equal(nodes['quiz-view'].hidden, false);
   nodes['back-to-lesson'].click();
   assert.equal(select.value, '427');
-  search.value = 'no-such-chapter';
-  search.listeners.input();
-  assert.equal(select.value, '');
-  assert.equal(select.disabled, true);
-  assert.equal(nodes['start-practice'].disabled, true);
-  assert.match(nodes['practice-chapter-count'].textContent, /No matching/);
-  nodes['practice-scope'].value = '10';
-  nodes['practice-scope'].listeners.change();
+  assert.equal(picker.lastCommand, 'close');
   assert.equal(nodes['start-practice'].disabled, false);
-  nodes['start-practice'].click();
-  assert.match(nodes['quiz-progress'].textContent, /of 10/);
-  nodes['back-to-lesson'].click();
-  nodes['practice-scope'].value = 'chapter';
-  nodes['practice-scope'].listeners.change();
-  assert.equal(nodes['start-practice'].disabled, true);
-  search.value = '一';
-  search.listeners.input();
-  assert.equal(select.children.length, 1);
-  assert.equal(select.value, '0');
-  assert.equal(nodes['start-practice'].disabled, false);
-  search.value = '';
-  search.listeners.input();
-  assert.equal(select.children.length, 428);
-  assert.equal(select.value, '0');
-  for (const query of ['Nature', 'ichi', 'イチ', 'one']) {
-    search.value = query;
-    search.listeners.input();
-    assert.ok(select.children.length > 0);
-    assert.notEqual(select.value, '');
-  }
 });
 
 test('search finds meanings, kanji, variants, kana and romaji and respects grade filters', () => {

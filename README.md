@@ -44,10 +44,15 @@ collection. Practice has one question per character. Questions have four
 choices, immediate feedback, scores, mistake review, and randomized retries.
 Scores are not saved; changing sections cancels the active attempt.
 
-The practice chapter dropdown has a search field for chapter numbers, titles,
-kanji, meanings, kana and romaji. Matching options preview their characters.
-When no chapters match, chapter practice is disabled with a clear message;
-random practice remains available.
+The practice chapter picker uses Select2, with the search box inside the
+opened dropdown rather than a separate input. Chapters are grouped by grade.
+The grouped `matchStart` matcher filters from the start of chapter labels:
+`12` matches chapters 12 and 120-129, not chapter 212. Searching does not change
+the selected chapter until an option is chosen. jQuery 3.7.1 and Select2 4.0.13
+are served locally from `public/vendor`, with their MIT license notices.
+
+The interface uses soft blush backgrounds, dusty-rose accents, and dark plum
+text, with distinct correct/incorrect quiz feedback colors.
 
 Pronunciation questions identify the reading type. No spoken audio or microphone
 is involved. A dot in readings separates okurigana (`ひと.つ` / `hito.tsu`);
