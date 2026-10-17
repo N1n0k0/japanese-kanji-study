@@ -28,7 +28,7 @@ class Element {
   setAttribute(name, value) { this.attributes[name] = value; }
   removeAttribute(name) { delete this.attributes[name]; }
   addEventListener(name, listener) { this.listeners[name] = listener; }
-  focus() { this.focused = true; }
+  focus(options) { this.focused = true; this.focusOptions = options; }
   click() { if (!this.disabled) return this.listeners.click(); }
 }
 
@@ -344,6 +344,7 @@ test('quiz UI hides lessons, locks answers, scores, reviews mistakes, retries an
   nodes['start-quiz'].click();
   assert.equal(nodes['lesson-view'].hidden, true);
   assert.equal(nodes['quiz-view'].hidden, false);
+  assert.equal(nodes['quiz-title'].focusOptions.preventScroll, true);
   assert.equal(nodes['quiz-feedback'].textContent, '');
   nodes['next-question'].click();
   assert.match(nodes['quiz-progress'].textContent, /Question 1/);
@@ -352,11 +353,14 @@ test('quiz UI hides lessons, locks answers, scores, reviews mistakes, retries an
   first.listeners.click();
   assert.equal(nodes['quiz-options'].children.every(b => b.disabled), true);
   assert.match(nodes['quiz-feedback'].textContent, /^Correct/);
+  assert.equal(nodes['next-question'].focusOptions.preventScroll, true);
   nodes['next-question'].click();
+  assert.equal(nodes['quiz-title'].focusOptions.preventScroll, true);
   nodes['quiz-options'].children[0].click();
   assert.match(nodes['quiz-feedback'].textContent, /Correct answer: ニ/);
   nodes['next-question'].click();
   assert.equal(nodes['quiz-results'].hidden, false);
+  assert.equal(nodes['quiz-score'].focusOptions.preventScroll, true);
   assert.equal(nodes['quiz-score'].textContent, '1 / 2 correct (50%)');
   assert.equal(nodes['quiz-review'].children.length, 1);
   assert.match(nodes['quiz-review'].children[0].textContent, /you chose/);

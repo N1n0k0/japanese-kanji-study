@@ -220,7 +220,7 @@
       button.addEventListener('click', function () { answerQuestion(option); });
       options.appendChild(button);
     });
-    document.getElementById('quiz-title').focus();
+    document.getElementById('quiz-title').focus({ preventScroll: true });
   }
 
   function answerQuestion(answer) {
@@ -241,7 +241,7 @@
     var nextQuestion = document.getElementById('next-question');
     nextQuestion.textContent = quiz.index === quiz.questions.length - 1 ? 'See results' : 'Next question';
     nextQuestion.hidden = false;
-    nextQuestion.focus();
+    nextQuestion.focus({ preventScroll: true });
   }
 
   function showResults() {
@@ -258,7 +258,7 @@
       review.appendChild(element('li', '', mistake.question.character + ' / ' + type +
         ': ' + mistake.question.answer + ' (you chose: ' + mistake.answer + ')'));
     });
-    document.getElementById('quiz-score').focus();
+    document.getElementById('quiz-score').focus({ preventScroll: true });
   }
 
   function startQuiz(practice) {
