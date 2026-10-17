@@ -4,6 +4,14 @@ A standalone HTML, CSS, and JavaScript website for studying all **2,136 Joyo
 kanji in 428 chapters**, with English meanings, kana, romaji, and quizzes.
 No PHP, database, frontend build, or runtime API is required.
 
+## Live website
+
+Visit https://n1n0k0.github.io/japanese-kanji-study/.
+
+GitHub Pages publishes the root of `main`. The root `index.html` directs
+visitors to the standalone page in `public`, and `.nojekyll` disables Jekyll
+processing. Push changes to `main` to update the live website automatically.
+
 ## Run locally
 
 Install Node.js 18 or newer, then run:
