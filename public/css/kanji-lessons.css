@@ -69,7 +69,7 @@ aside input, aside select { width: 100%; min-width: 0; padding: 10px; border: 1p
 .chapter-header > p:last-child { margin-bottom: 24px; }
 .cards { display: grid; gap: 16px; }
 .kanji-card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 24px; display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 24px; }
-.character { display: grid; place-items: center; align-self: start; min-height: 104px; background: var(--soft); border-radius: 12px; font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", sans-serif; font-size: 64px; }
+.character { display: grid; place-items: center; align-self: start; min-height: 104px; background: #fff; color: #000; border-radius: 12px; font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", sans-serif; font-size: 64px; }
 .kanji-card h3 { margin: 0 0 10px; font-size: 22px; overflow-wrap: anywhere; }
 .kanji-meta, .missing-reading { font-size: 12px; margin: 0 0 14px; }
 .readings { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
