@@ -179,8 +179,8 @@
       details.appendChild(element('p', 'kanji-meta', kanji.strokes + ' strokes' +
         (kanji.variants.length ? ' / Common variant: ' + kanji.variants.join(', ') : '')));
       var readingGroups = element('div', 'readings');
-      readingGroups.appendChild(readings("On'yomi / katakana", kanji.onyomi));
       readingGroups.appendChild(readings("Kun'yomi / hiragana", kanji.kunyomi));
+      readingGroups.appendChild(readings("On'yomi / katakana", kanji.onyomi));
       details.appendChild(readingGroups);
       card.appendChild(details);
       cards.appendChild(card);

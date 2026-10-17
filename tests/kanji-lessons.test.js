@@ -310,6 +310,9 @@ test('chapter navigation, filters, empty results, and the short chapter work', a
   assert.equal(nodes.chapters.children.length, 428);
   assert.equal(nodes['kanji-cards'].children.length, 5);
   assert.equal(nodes['chapter-title'].textContent, 'Numbers 1-5');
+  const readingGroups = nodes['kanji-cards'].children[0].children[1].children[2];
+  assert.equal(readingGroups.children[0].children[0].textContent, "Kun'yomi / hiragana");
+  assert.equal(readingGroups.children[1].children[0].textContent, "On'yomi / katakana");
   assert.equal(nodes.previous.disabled, true);
   nodes.next.click();
   assert.equal(nodes['chapter-title'].textContent, 'Numbers 6-10');
